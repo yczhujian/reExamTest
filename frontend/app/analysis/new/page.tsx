@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import AnalysisModeSelector from '@/components/AnalysisModeSelector'
+import { AnalysisMode, APISelector } from '@/lib/api-selector'
 
 export default function NewAnalysisPage() {
   const router = useRouter()
@@ -11,6 +13,7 @@ export default function NewAnalysisPage() {
     technical_field: '',
     technical_content: ''
   })
+  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('standard')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -46,27 +49,11 @@ export default function NewAnalysisPage() {
 
       const user = await userResponse.json()
 
-      // 创建分析
-      const response = await fetch('http://localhost:8000/api/analyze-patent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...formData,
-          user_id: user.user_id
-        })
-      })
+      // 使用 APISelector 创建分析
+      const result = await APISelector.createAnalysis(formData, analysisMode)
 
-      const data = await response.json()
-
-      if (response.ok) {
-        // 跳转到分析详情页
-        router.push(`/analysis/${data.analysis_id}`)
-      } else {
-        setError(data.detail || '创建分析失败')
-      }
+      // 跳转到分析详情页
+      router.push(`/analysis/${result.analysis_id}`)
     } catch (err) {
       setError('网络错误，请重试')
     } finally {
@@ -180,6 +167,13 @@ export default function NewAnalysisPage() {
 4. 与现有技术的区别"
               />
             </div>
+
+            {/* 分析模式选择 */}
+            <AnalysisModeSelector
+              value={analysisMode}
+              onChange={setAnalysisMode}
+              className="border-t pt-6"
+            />
 
             <div className="flex justify-end space-x-4">
               <button

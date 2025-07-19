@@ -24,7 +24,7 @@ app = FastAPI(title="Patent Analysis API", version="1.0.0")
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://*.vercel.app"],
+    allow_origins=["http://localhost:3000", "http://localhost:3002", "https://*.vercel.app", "https://*.railway.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -77,9 +77,20 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # Health check endpoint
 @app.get("/")
-async def health_check():
+async def root():
     return {
-        "status": "healthy", 
+        "message": "Patent Analysis API", 
+        "version": "2.0.0",
+        "features": ["standard_analysis", "advanced_analysis_langgraph"]
+    }
+
+@app.get("/health")
+async def health_check():
+    """健康检查端点"""
+    from datetime import datetime
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
         "service": "Patent Analysis API",
         "supabase": "connected"
     }
@@ -413,6 +424,86 @@ async def analyze_patent(request: AnalysisRequest):
         logger.error(f"专利分析失败: {e}")
         if 'analysis_id' in locals():
             await db.update_analysis_status(analysis_id, "failed", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Advanced patent analysis with LangGraph
+@app.post("/api/analyze-patent-advanced")
+async def analyze_patent_advanced(request: AnalysisRequest):
+    """使用 LangGraph 进行高级专利分析"""
+    try:
+        # 1. 创建分析记录
+        analysis = await db.create_analysis(
+            user_id=request.user_id,
+            data={
+                "title": request.title,
+                "description": request.description,
+                "metadata": {
+                    "technical_field": request.technical_field,
+                    "technical_content": request.technical_content,
+                    "analysis_mode": "advanced"
+                }
+            }
+        )
+        
+        analysis_id = analysis["id"]
+        
+        # 2. 使用 LangGraph 工作流
+        logger.info(f"启动 LangGraph 高级分析: {request.title}")
+        
+        # 导入 LangGraph 工作流
+        from workflows.langgraph_analysis import patent_workflow
+        
+        # 异步运行工作流
+        import asyncio
+        asyncio.create_task(patent_workflow.run({
+            "title": request.title,
+            "description": request.description,
+            "technical_field": request.technical_field,
+            "technical_content": request.technical_content,
+            "user_id": request.user_id,
+            "analysis_id": analysis_id
+        }))
+        
+        return {
+            "analysis_id": analysis_id,
+            "status": "processing",
+            "message": "高级专利分析已启动，请通过进度接口查询状态"
+        }
+        
+    except Exception as e:
+        logger.error(f"高级分析启动失败: {e}")
+        if 'analysis_id' in locals():
+            await db.update_analysis_status(analysis_id, "failed", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Get analysis progress
+@app.get("/api/analysis/{analysis_id}/progress")
+async def get_analysis_progress(analysis_id: str):
+    """获取分析进度"""
+    try:
+        # 从数据库获取分析状态
+        analysis = await db.get_analysis(analysis_id)
+        if not analysis:
+            raise HTTPException(status_code=404, detail="分析不存在")
+        
+        # 获取已完成的报告
+        reports = await db.get_analysis_reports(analysis_id)
+        
+        # 计算进度
+        total_steps = 5  # 新颖性、创造性、实用性、市场、风险
+        completed_steps = len([r for r in reports if r["report_type"] != "comprehensive"])
+        progress = int((completed_steps / total_steps) * 100)
+        
+        return {
+            "analysis_id": analysis_id,
+            "status": analysis["status"],
+            "progress": progress,
+            "current_step": analysis.get("metadata", {}).get("current_step", ""),
+            "completed_reports": [r["report_type"] for r in reports]
+        }
+        
+    except Exception as e:
+        logger.error(f"获取进度失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # ========== 认证相关端点 ==========

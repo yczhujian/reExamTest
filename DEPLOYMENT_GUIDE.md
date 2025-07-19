@@ -10,6 +10,14 @@
 4. Node.js 18+ 已安装
 5. Git 已安装
 
+## 📋 重要更新：支持高级分析模式
+
+本系统现在支持两种部署方案：
+1. **基础方案**：Vercel（前端）+ Supabase Edge Functions（后端）
+2. **高级方案**：Vercel（前端）+ Railway（Python API with LangGraph）
+
+推荐使用**高级方案**以获得最佳的分析深度和精度。
+
 ## 🚀 第一步：准备代码
 
 ### 1.1 克隆或下载项目代码
@@ -29,7 +37,9 @@ cd ..
 npm install -g supabase
 ```
 
-## 🔧 第二步：部署后端（Supabase Edge Functions）
+## 🔧 第二步：部署后端
+
+### 选项 A：Supabase Edge Functions（基础方案）
 
 ### 2.1 登录 Supabase CLI
 ```bash
@@ -51,6 +61,27 @@ supabase login
 5. 添加以下环境变量：
    - `GEMINI_API_KEY`：您的 Gemini API 密钥
    - `SERPAPI_KEY`：您的 SERP API 密钥
+
+### 选项 B：Railway Python API（高级方案 - 推荐）
+
+详细步骤请查看 `RAILWAY_DEPLOYMENT.md`
+
+1. **创建 Railway 项目**
+   - 登录 Railway.app
+   - 从 GitHub 部署
+   - 设置根目录为 `/api`
+
+2. **配置环境变量**
+   ```
+   SUPABASE_URL=...
+   SUPABASE_SERVICE_ROLE_KEY=...
+   GEMINI_API_KEY=...
+   SERPAPI_KEY=...
+   ```
+
+3. **获取 API URL**
+   - 生成域名
+   - 记录 URL（如 https://your-api.railway.app）
 
 ## 🌐 第三步：部署前端（Vercel）
 
@@ -89,6 +120,7 @@ git push origin main
    | `NEXT_PUBLIC_SUPABASE_URL` | `https://grjslrfvlarfslgtoeqi.supabase.co` | Supabase 项目 URL |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | 从 .env.local 复制 | Supabase 匿名密钥 |
    | `SUPABASE_SERVICE_ROLE_KEY` | 从 .env.local 复制 | Supabase 服务密钥 |
+   | `NEXT_PUBLIC_API_URL` | Railway API URL（如果使用高级方案） | Python API 地址 |
 
 5. **部署**
    - 点击 "Deploy"

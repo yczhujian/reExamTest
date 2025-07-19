@@ -92,6 +92,7 @@ async def health_check():
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "service": "Patent Analysis API",
+        "version": "1.0.1",
         "supabase": "connected"
     }
 

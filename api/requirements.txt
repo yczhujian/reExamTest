@@ -12,7 +12,7 @@ python-multipart==0.0.18
 langgraph==0.0.37
 langchain==0.1.16
 langchain-google-genai==1.0.0
-asyncio==3.4.3
+# asyncio is built-in for Python 3.7+, no need to install
 aiohttp==3.9.1
 
 # Additional utilities

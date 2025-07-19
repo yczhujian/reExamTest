@@ -4,6 +4,8 @@
 .env.production.local
 .env.development.local
 .env.test.local
+# Keep .env.production template for reference
+!.env.production
 
 # Dependencies
 node_modules/
@@ -53,3 +55,16 @@ yarn-error.log*
 .cache/
 .temp/
 *.tmp
+
+# API specific
+api/.env
+api/__pycache__/
+api/*.log
+nohup.out
+
+# Supabase
+supabase/.env
+supabase/.env.local
+
+# Deployment
+.vercel/

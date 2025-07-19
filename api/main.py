@@ -16,7 +16,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Load environment variables
-load_dotenv(dotenv_path="../.env.local")
+# Try to load from .env.local if it exists (for local development)
+if os.path.exists("../.env.local"):
+    load_dotenv(dotenv_path="../.env.local")
+else:
+    # In production, environment variables should be set directly
+    logger.info("No .env.local file found, using environment variables")
 
 # Initialize FastAPI app
 app = FastAPI(title="Patent Analysis API", version="1.0.0")

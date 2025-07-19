@@ -1,0 +1,46 @@
+# Frontend files
+frontend/
+node_modules/
+
+# Database files
+database/
+
+# Documentation
+*.md
+docs/
+
+# Git files
+.git/
+.gitignore
+
+# Environment files
+.env*
+*.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+tests/
+test_*
+*_test.py
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

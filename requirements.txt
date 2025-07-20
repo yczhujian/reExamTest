@@ -17,6 +17,7 @@ python-multipart==0.0.18
 aiohttp==3.9.1
 
 # Additional utilities
+PyJWT==2.8.0
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 # redis==5.0.1

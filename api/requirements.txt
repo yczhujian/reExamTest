@@ -8,15 +8,16 @@ pydantic==2.10.0
 httpx>=0.24.0,<0.25.0
 python-multipart==0.0.18
 
-# LangGraph and AI Dependencies
-langgraph==0.0.37
-langchain==0.1.16
-langchain-google-genai==1.0.0
+# LangGraph and AI Dependencies (temporarily commented out for deployment)
+# langgraph==0.2.0
+# langchain==0.2.0
+# langchain-google-genai==1.0.8
+# langchain-community==0.2.0
 # asyncio is built-in for Python 3.7+, no need to install
 aiohttp==3.9.1
 
 # Additional utilities
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-redis==5.0.1
-celery==5.3.4
+# redis==5.0.1
+# celery==5.3.4

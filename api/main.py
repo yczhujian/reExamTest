@@ -436,6 +436,8 @@ async def analyze_patent(request: AnalysisRequest):
 @app.post("/api/analyze-patent-advanced")
 async def analyze_patent_advanced(request: AnalysisRequest):
     """使用 LangGraph 进行高级专利分析"""
+    # Temporarily disabled for deployment
+    raise HTTPException(status_code=503, detail="Advanced analysis temporarily unavailable")
     try:
         # 1. 创建分析记录
         analysis = await db.create_analysis(
